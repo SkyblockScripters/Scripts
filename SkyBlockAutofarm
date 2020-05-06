@@ -1,5 +1,4 @@
-
---loadstring(game:HttpGet('https://pastebin.com/raw/mAbLu73x', true))()
+--loadstring(game:HttpGet('https://raw.githubusercontent.com/SkyblockScripters/Scripts/master/SkyBlockAutofarm', true))()
 local plowBlock = game:GetService("ReplicatedStorage").Remotes.Functions["PLOW_BLOCK_REQUEST"]
 local cropRem = game:GetService("ReplicatedStorage").Remotes.Functions["HARVEST_CROP_REQUEST"]
 local blockRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_BREAK_REQUEST"]
