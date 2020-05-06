@@ -1,0 +1,85 @@
+local library = loadstring(game:HttpGet(('https://pastebin.com/raw/FsJak6AT')))() -- Loading UI Library
+
+local w = library:CreateWindow("Notoriety") -- Create draggable GUI
+
+local b = w:CreateFolder("Player") -- First "set" of scripts | Relating to player Speed, Jump, No-Clip, etc...
+
+-- Variables for scripts
+local scripttoggle = false
+local nocliptoggle = false
+local respawned = false
+
+b:Label("Player Scripts",Color3.fromRGB(38,38,38),Color3.fromRGB(0,216,111)) -- Backround Colour - Text Colour
+
+b:Button("Button",function() -- Clickable button that sets off a script when pressed
+    print("Elym Winning")
+end)
+
+b:Toggle("Script Toggle (On/Off)",function(bool) -- Outputs True or False
+	scripttoggle = bool
+end)
+
+b:Slider("Speed",1000,function(value) -- Slider where second number is teh max (1-MAX) and the variable value is the output
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+	respawned = false
+	if respawn == false then
+		game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+ 			character:WaitForChild("HumanoidRootPart")
+ 			game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+			respawn = true
+		end)
+	end
+end)
+
+b:Button("Reset Speed",function() -- Clickable button that sets off a script when pressed
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+	game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+ 		character:WaitForChild("HumanoidRootPart")
+ 		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+		hookfunction(wait,function () return error end)
+	end)
+end)
+
+b:Dropdown("Dropdown",{"A","B","C"},function(mob) -- Dropdown list with names | Output is...
+    print(mob)
+end)
+
+b:Bind("Noclip",function() -- No-Clip script (Toggle set by bind) | Sets off script when key is pressed
+	if scripttoggle == true then -- Toggled for all scripts in folder
+		if nocliptoggle == true then -- No clip toggle | flip-flop when bind is pressed
+			game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+			nocliptoggle = false
+		elseif nocliptoggle == false then 
+			nocliptoggle = true
+		end
+		-- Actuall No-Clip script!
+		game:GetService('RunService').Stepped:connect(function() -- If the player steps and toggle is on the it will noclip you
+			if nocliptoggle == true then
+				game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+			end
+		end)
+	end
+end)
+
+b:ColorPicker("ColorPicker",Color3.fromRGB(255,0,0),function(color) -- Picks a color and outputs the HEX
+    print(color)
+end)
+
+b:Box("Box","number",function(value) -- "number" or "string"
+    print(value)
+end)
+
+b:DestroyGUI() -- Button to destroy the GUI
+
+b:GuiSettings() -- Use it if you want to let people customize toggles,buttons and sliders color
+
+--Example of refresh
+
+--[[local label = b:Label("Hi",Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0))
+
+label:Refresh("Not epic")
+
+local dropdown = b:Dropdown("Hi",{"A","B"})
+
+dropdown:Refresh({"A","B","C"})
+]]
