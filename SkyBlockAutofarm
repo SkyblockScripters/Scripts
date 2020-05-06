@@ -1,0 +1,238 @@
+
+--loadstring(game:HttpGet('https://pastebin.com/raw/mAbLu73x', true))()
+local plowBlock = game:GetService("ReplicatedStorage").Remotes.Functions["PLOW_BLOCK_REQUEST"]
+local cropRem = game:GetService("ReplicatedStorage").Remotes.Functions["HARVEST_CROP_REQUEST"]
+local blockRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_BREAK_REQUEST"]
+local blockPlaceRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_PLACE_REQUEST"]
+local pickRem = game:GetService("ReplicatedStorage").Remotes.Functions["TOOL_PICKUP_REQUEST"]
+local depositRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_WORKER_DEPOSIT_TOOL_REQUEST"]
+local hitRem = game:GetService("ReplicatedStorage").Remotes.Functions["SWING_SWORD"]
+local library = loadstring(game:HttpGet(('https://pastebin.com/raw/FsJak6AT')))()
+local first_w = library:CreateWindow('Autofarm?')
+local first_f = first_w:CreateFolder('Farming stuff')
+function getBlock(a)
+    local blocks = {}
+    for i,v in pairs(game:GetService("Workspace").Islands:GetChildren()) do
+        if v:FindFirstChild("UserId") and v.UserId.Value == game.Players.LocalPlayer.UserId then
+            for i2,v2 in pairs(v.Blocks:GetChildren()) do
+                if v2.Name == a:lower() or string.find(v2.Name, a:lower()) and v2:FindFirstChildWhichIsA("Model") then
+                    table.insert(blocks, v2:FindFirstChildWhichIsA("Model"))
+                end
+            end
+        end
+    end
+    return blocks
+end
+local farmCrop = false
+local farmCropReplace = false
+local crop = "omega gay"
+first_f:Box('Crop name', "string", function(a)
+    crop = a
+end)
+first_f:Toggle('Autofarm crop', function(a)
+    farmCrop = a
+end)
+first_f:Toggle('Auto replace crop', function(a)
+    farmCropReplace = a
+end)
+first_f:Button('Plow all grass', function()
+    for i,v in pairs(getBlock("grass")) do
+        plowBlock:InvokeServer({
+            ["block"] = v
+        })
+    end
+end)
+first_f:Button('Un plow all grass', function()
+    for i,v in pairs(getBlock("soil")) do
+        plowBlock:InvokeServer({
+            ["block"] = v
+        })
+    end
+end)
+first_f:Label('Also, have a plower equipped when using plow all / un plow all')
+local allOreFarm = false
+local oreFarm = false
+local ore = "bb"
+local third_f = first_w:CreateFolder('Ore farming stuff')
+third_f:Box('Ore name', "string", function(a)
+    ore = a
+end)
+third_f:Toggle('Automine ore', function(a)
+    oreFarm = a
+end)
+third_f:Toggle('Automine all ores', function(a)
+    allOreFarm = a
+end)
+local sec_f = first_w:CreateFolder('Auto smelting stuff')
+local smelt = false
+local oreNam = "poo"
+local fuelNam = "poo2"
+local smelterNam = "oh"
+sec_f:Box('Ore name\n(ex: iron)', "string", function(a)
+    oreNam = a:lower()
+end)
+sec_f:Box('Fuel name\n(ex: coal)', "string", function(a)
+    fuelNam = a:lower()
+end)
+sec_f:Box('Smelter name', "string", function(a)
+    smelterNam = a
+end)
+sec_f:Toggle('Auto smelt', function(a)
+    smelt = a
+end)
+sec_f:Label('If its not smelting, try changing up the smelter name.')
+sec_f:Label('Example:\nSmall Furnace = small')
+local farmTotem = false
+local collectTotem = false
+local fourth_f = first_w:CreateFolder('Totem farming stuff')
+fourth_f:Toggle('Autofarm ores', function(a)
+    farmTotem = a
+end)
+fourth_f:Toggle('Autocollect ores', function(a)
+    collectTotem = a
+end)
+local killAura = false
+local does_f = first_w:CreateFolder('Slime island stuff')
+does_f:Toggle('Kill aura slimes', function(a)
+    killAura = a
+end)
+does_f:Button('Tp to slime island', function(a)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(686.188049, 193.070175, -229.89093, 0.792604923, 0.0576229654, 0.607006669, -0.039945025, 0.998292983, -0.0426090583, -0.608425736, 0.00952526182, 0.79355371) * CFrame.new(0,0,5)
+end)
+local anti = false
+local misc_f = first_w:CreateFolder('Misc stuff')
+misc_f:Toggle('Anti afk', function(a)
+    anti = a
+end)
+local last_f = first_w:CreateFolder('Credits')
+last_f:Label('Stefanuk12#5820 (helped me) \nCallMeSynisti#6049')
+local savePos = true
+local savedPos = CFrame.new(0,0,0)
+spawn(function()
+    while wait() do
+        if savePos ~= nil and savePos then
+            savedPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        end
+    end
+end)
+spawn(function()
+    while wait() do
+        if farmCrop then
+            for i,v in pairs(getBlock(crop)) do
+                cropRem:InvokeServer({
+                    ["player"] = game.Players.LocalPlayer,
+                    ["model"] = v
+                })
+            end
+            for i,v in pairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
+                local name = crop:lower().."Seeds" 
+                if v.Name == name or game.Players.LocalPlayer.Character:FindFirstChild(name) and farmCrop then
+                    for i3,v3 in pairs(getBlock('soil')) do
+                        if farmCropReplace and (game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(name) or game.Players.LocalPlayer.Character:FindFirstChild(name)) then
+                            blockPlaceRem:InvokeServer({
+                                ["cframe"] = v3.Parent.CFrame * CFrame.new(0,3,0),
+                                ["blockType"] = crop:lower()
+                            })
+                            if game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(name) then
+                                game:GetService("Players").LocalPlayer.Backpack[name].Parent = game.workspace[game.Players.LocalPlayer.Name]
+                            end
+                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v3.Parent.CFrame * CFrame.new(0,3,0)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+spawn(function()
+    while wait() do
+        if oreFarm then
+            local name = tostring('rock' .. ore)
+            if game:GetService("Workspace").WildernessBlocks:FindFirstChild(name) then
+                blockRem:InvokeServer({
+                    ["block"] = game:GetService("Workspace").WildernessBlocks:FindFirstChild(name):FindFirstChild(name)
+                })
+            end
+        end
+        if allOreFarm then
+            for i,v in pairs(game:GetService("Workspace").WildernessBlocks:GetChildren()) do
+                if string.find(v.Name:lower(), 'rock') and v:FindFirstChild(v.Name) and v:FindFirstChild(v.Name):FindFirstChild('Root') and (v:FindFirstChild(v.Name):FindFirstChild('Root').Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 120 then
+                    blockRem:InvokeServer({
+                        ["block"] = v:FindFirstChild(v.Name)
+                    })
+                end
+            end
+        end
+    end
+end)
+spawn(function()
+    while wait() do
+        if smelt then
+            for i,v in pairs(getBlock(smelterNam)) do
+                depositRem:InvokeServer({
+                    ["block"] = v,
+                    ["amount"] = 1,
+                    ["toolName"] = oreNam .. "Ore"
+                })
+                depositRem:InvokeServer({
+                    ["block"] = v,
+                    ["amount"] = 1,
+                    ["toolName"] = fuelNam
+                })
+                if v:FindFirstChild("WorkerContents") and v.WorkerContents:FindFirstChildWhichIsA("Tool") and v.WorkerContents:FindFirstChildWhichIsA("Tool").Name == oreNam then
+                    savePos = false
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame * CFrame.new(0,0,-3)
+                    wait(0.2)
+                    pickRem:InvokeServer({
+                        ["tool"] = v.WorkerContents:FindFirstChildWhichIsA("Tool")
+                    })
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedPos
+                    savePos = true
+                end
+            end
+        end
+    end
+end)
+spawn(function()
+    while wait() do
+        if farmTotem then
+            for i,v in pairs(getBlock('rock')) do
+                blockRem:InvokeServer({
+                    ["block"] = v
+                })
+            end
+        end
+        if collectTotem then
+            for i,v in pairs(getBlock('totem')) do
+                if v:FindFirstChild("WorkerContents") and v.WorkerContents:FindFirstChildWhichIsA("Tool") then
+                    savePos = false
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame * CFrame.new(0,0,-5)
+                    wait(0.2)
+                    pickRem:InvokeServer({
+                        ["tool"] = v.WorkerContents:FindFirstChildWhichIsA("Tool")
+                    })
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedPos
+                    savePos = true
+                end
+            end
+        end
+    end
+end)
+spawn(function()
+    while wait() do
+        if killAura then
+            for i,v in pairs(game:GetService("Workspace").Entities:GetChildren()) do
+                hitRem:InvokeServer({
+                    ["hitUnit"] = v
+                })
+            end
+        end
+    end
+end)
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+    print("anti afk")
+    if anti then
+        warn("anti is on")
+        game:GetService("VirtualUser"):Button2Down(Vector2.new())
+    end
+end)
