@@ -119,8 +119,34 @@ local anti_afk = false
 misc_folder:Toggle('Anti AFK', function(a)
     anti_afk = a
 end)
+b:Bind("Noclip",function()
+	if scripttoggle == true then 
+		if nocliptoggle == true then
+			game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+			nocliptoggle = false
+		elseif nocliptoggle == false then 
+			nocliptoggle = true
+		end
+		-- Actuall No-Clip script!
+		game:GetService('RunService').Stepped:connect(function()
+			if nocliptoggle == true then
+				game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+			end
+		end)
+	end
+end)
+b:Slider("Speed",1000,function(value)
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+end)
+b:Button("Reset Speed",function()
+   	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+end)
+misc_folder:DestroyGUI()
+misc_folder:GuiSettings() 
 local last_f = autofarm_window:CreateFolder('Credits')
 last_f:Label('CallMeSynisti#6049 (LEAD DEV)\n PhantomScripter#1303 \nStefanuk12#5820')
+last_f:Label('PhantomScripter#1303')
+last_f:Label('Stefanuk12#5820')
 local savePos = true
 local savedPos = CFrame.new(0,0,0)
 spawn(function()
