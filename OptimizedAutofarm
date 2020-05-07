@@ -52,10 +52,10 @@ local automine_folder = autofarm_window:CreateFolder('Automine')
 local automine_all = false
 local automine = false
 local ore = "Unknown"
-=automine_folder:Dropdown("Ore name",{"Ore name","Iron","Coal","Stone"}, function(a)
+automine_folder:Dropdown("Ore name",{"Ore name","Iron","Coal","Stone"}, function(a)
     ore = (a):lower()
 end)
-=automine_folder:Toggle('Automine ore', function(a)
+automine_folder:Toggle('Automine ore', function(a)
     automine = a
 end)
 automine_folder:Toggle('Automine all ores', function(a)
