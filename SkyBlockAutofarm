@@ -15,6 +15,7 @@ smelting_folder == The smelting "folder" of the GUI. Holds scripts pertaining to
 totem_folder == The totem "folder" of the GUI. Holds scripts pertaining to totems.
 slime_folder == The slime "fodler" of the GUI. Holds scripts pertaining to slimes.
 misc_folder == The misc "folder" of the GUI. Holds scripts pertaining to anything.
+credits_folder == Credits!
 
 --]]
 
@@ -195,7 +196,7 @@ smelting_folder:Label('Campfire and Industrial \nAre Broken')
 ------------------------------------------------------------------------
 --]]
 
-local totem_folder = autofarm_window:CreateFolder('Totem farming stuff')
+local totem_folder = autofarm_window:CreateFolder('Autototem')
 
 local automine_totems = false
 local auto_collect = false
@@ -213,7 +214,7 @@ end)
 
 -- Slime Library
 
-local slime_folder = autofarm_window:CreateFolder('Slime island stuff')
+local slime_folder = autofarm_window:CreateFolder('Autoslime')
 
 -- Slime variables
 
@@ -237,7 +238,7 @@ end)
 
 -- Misc Library
 
-local misc_folder = autofarm_window:CreateFolder('Misc stuff')
+local misc_folder = autofarm_window:CreateFolder('Misc')
 
 -- Misc Variables
 
@@ -251,32 +252,31 @@ end)
 
 -- Noclip Toggle and Keybind
 
-b:Bind("Noclip",function()
-	if scripttoggle == true then 
+local nocliptoggle = false
+
+misc_folder:Bind("Noclip",function()
+	if nocliptoggle == true then
+		game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+		nocliptoggle = false
+	elseif nocliptoggle == false then 
+		nocliptoggle = true
+	end
+	game:GetService('RunService').Stepped:connect(function()
 		if nocliptoggle == true then
 			game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
-			nocliptoggle = false
-		elseif nocliptoggle == false then 
-			nocliptoggle = true
 		end
-		-- Actuall No-Clip script!
-		game:GetService('RunService').Stepped:connect(function()
-			if nocliptoggle == true then
-				game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
-			end
-		end)
-	end
+	end)
 end)
 
 -- Speed Script
 
-b:Slider("Speed",1000,function(value)
+misc_folder:Slider("Speed",1000,function(value)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
 
 -- Reset Speed
 
-b:Button("Reset Speed",function()
+misc_folder:Button("Reset Speed",function()
    	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
 end)
 
@@ -294,13 +294,13 @@ misc_folder:GuiSettings()
 
 -- Credits Folder
 
-local last_f = autofarm_window:CreateFolder('Credits')
+local credits_folder = autofarm_window:CreateFolder('Credits')
 
 -- Credits Labels
 
-last_f:Label('CallMeSynisti#6049 (LEAD DEV)')
-last_f:Label('PhantomScripter#1303')
-last_f:Label('Stefanuk12#5820')
+credits_folder:Label('CallMeSynisti#6049 (LEAD DEV)')
+credits_folder:Label('PhantomScripter#1303')
+credits_folder:Label('Stefanuk12#5820')
 
 --[[
 ------------------------------------------------------------------------
