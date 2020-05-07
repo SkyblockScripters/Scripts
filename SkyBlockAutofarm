@@ -292,10 +292,15 @@ misc_folder:GuiSettings()
 ------------------------------------------------------------------------
 --]]
 
--- Credits
+-- Credits Folder
 
 local last_f = autofarm_window:CreateFolder('Credits')
-last_f:Label('CallMeSynisti#6049 (LEAD DEV)\n PhantomScripter#1303 \nStefanuk12#5820')
+
+-- Credits Labels
+
+last_f:Label('CallMeSynisti#6049 (LEAD DEV)')
+last_f:Label('PhantomScripter#1303')
+last_f:Label('Stefanuk12#5820')
 
 --[[
 ------------------------------------------------------------------------
