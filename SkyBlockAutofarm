@@ -477,11 +477,16 @@
 	spawn(function()
 		while wait() do
 			if auto_eat == true then
-				local players = game:GetService("Players")
-				if players.LocalPlayer.Character.Humanoid.Health < 100 then
-					eat_food_remote:InvokeServer({
-						["tool"] = food_type
-					})
+				for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+					if v.Name == food_type then
+						print(v)
+						local players = game:GetService("Players")
+						if players.LocalPlayer.Character.Humanoid.Health < 100 then
+							eat_food_remote:InvokeServer({
+								["tool"] = v
+							})
+						end
+					end
 				end
 			end
 		end
