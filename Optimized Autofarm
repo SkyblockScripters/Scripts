@@ -97,7 +97,7 @@ smelting_folder:Toggle('Auto smelt', function(a)
     smelt = a
 end)
 smelting_folder:Label('Campfire and Industrial \nAre Broken')
-local totem_folder = autofarm_window:CreateFolder('Totem farming stuff')
+local totem_folder = autofarm_window:CreateFolder('Autototem')
 local automine_totems = false
 local auto_collect = false
 totem_folder:Toggle('Automine ores created', function(a)
@@ -106,7 +106,7 @@ end)
 totem_folder:Toggle('Autocollect items', function(a)
     auto_collect = a
 end)
-local slime_folder = autofarm_window:CreateFolder('Slime island stuff')
+local slime_folder = autofarm_window:CreateFolder('Autoslime')
 local kill_slimes = false
 slime_folder:Toggle('Killaura Slimes', function(a)
     kill_slimes = a
@@ -114,39 +114,37 @@ end)
 slime_folder:Button('Slime Island TP', function(a)
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(686.188049, 193.070175, -229.89093, 0.792604923, 0.0576229654, 0.607006669, -0.039945025, 0.998292983, -0.0426090583, -0.608425736, 0.00952526182, 0.79355371) * CFrame.new(0,0,5)
 end)
-local misc_folder = autofarm_window:CreateFolder('Misc stuff')
+local misc_folder = autofarm_window:CreateFolder('Misc')
 local anti_afk = false
 misc_folder:Toggle('Anti AFK', function(a)
     anti_afk = a
 end)
-b:Bind("Noclip",function()
-	if scripttoggle == true then 
+local nocliptoggle = false
+misc_folder:Bind("Noclip",function()
+	if nocliptoggle == true then
+		game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+		nocliptoggle = false
+	elseif nocliptoggle == false then 
+		nocliptoggle = true
+	end
+	game:GetService('RunService').Stepped:connect(function()
 		if nocliptoggle == true then
 			game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
-			nocliptoggle = false
-		elseif nocliptoggle == false then 
-			nocliptoggle = true
 		end
-		-- Actuall No-Clip script!
-		game:GetService('RunService').Stepped:connect(function()
-			if nocliptoggle == true then
-				game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
-			end
-		end)
-	end
+	end)
 end)
-b:Slider("Speed",1000,function(value)
+misc_folder:Slider("Speed",1000,function(value)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
-b:Button("Reset Speed",function()
+misc_folder:Button("Reset Speed",function()
    	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
 end)
 misc_folder:DestroyGUI()
 misc_folder:GuiSettings() 
-local last_f = autofarm_window:CreateFolder('Credits')
-last_f:Label('CallMeSynisti#6049 (LEAD DEV)\n PhantomScripter#1303 \nStefanuk12#5820')
-last_f:Label('PhantomScripter#1303')
-last_f:Label('Stefanuk12#5820')
+local credits_folder = autofarm_window:CreateFolder('Credits')
+credits_folder:Label('CallMeSynisti#6049 (LEAD DEV)')
+credits_folder:Label('PhantomScripter#1303')
+credits_folder:Label('Stefanuk12#5820')
 local savePos = true
 local savedPos = CFrame.new(0,0,0)
 spawn(function()
