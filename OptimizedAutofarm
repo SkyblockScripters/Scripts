@@ -49,7 +49,7 @@ crop_folder:Button('Un-plow  grass', function()
 end)
 crop_folder:Label('Equip Plow while Plowing.')
 local automine_folder = autofarm_window:CreateFolder('Automine')
-=local automine_all = false
+local automine_all = false
 local automine = false
 local ore = "Unknown"
 =automine_folder:Dropdown("Ore name",{"Ore name","Iron","Coal","Stone"}, function(a)
