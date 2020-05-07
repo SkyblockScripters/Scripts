@@ -1,459 +1,498 @@
---[[
-loadstring(game:HttpGet('https://raw.githubusercontent.com/SkyblockScripters/Scripts/master/SkyBlockAutofarm', true))()
+	--[[
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/SkyblockScripters/Scripts/master/SkyBlockAutofarm', true))()
 
-INFO
+	INFO
 
-Windows:
+	Windows:
 
-autofarm_window == The main "window" of the GUI. Holds all folders and scripts.
+	autofarm_window == The main "window" of the GUI. Holds all folders and scripts.
 
-Folders:
+	Folders:
 
-crop_folder == The crop "folder" of the GUI. Holds scripts pertaining to crops.
-automine_folder == The mining "folder" of the GUI. Holds scripts pertaining to stones.
-smelting_folder == The smelting "folder" of the GUI. Holds scripts pertaining to smelting.
-totem_folder == The totem "folder" of the GUI. Holds scripts pertaining to totems.
-slime_folder == The slime "fodler" of the GUI. Holds scripts pertaining to slimes.
-misc_folder == The misc "folder" of the GUI. Holds scripts pertaining to anything.
-credits_folder == Credits!
+	crop_folder == The crop "folder" of the GUI. Holds scripts pertaining to crops.
+	automine_folder == The mining "folder" of the GUI. Holds scripts pertaining to stones.
+	smelting_folder == The smelting "folder" of the GUI. Holds scripts pertaining to smelting.
+	totem_folder == The totem "folder" of the GUI. Holds scripts pertaining to totems.
+	slime_folder == The slime "fodler" of the GUI. Holds scripts pertaining to slimes.
+	misc_folder == The misc "folder" of the GUI. Holds scripts pertaining to anything.
+	credits_folder == Credits!
 
---]]
+	--]]
 
--- Crop Remotes
+	-- Crop Remotes
 
-local plow_block_remote = game:GetService("ReplicatedStorage").Remotes.Functions["PLOW_BLOCK_REQUEST"]
-local harvest_block_remote = game:GetService("ReplicatedStorage").Remotes.Functions["HARVEST_CROP_REQUEST"]
+	local plow_block_remote = game:GetService("ReplicatedStorage").Remotes.Functions["PLOW_BLOCK_REQUEST"]
+	local harvest_block_remote = game:GetService("ReplicatedStorage").Remotes.Functions["HARVEST_CROP_REQUEST"]
+	local eat_food_remote = game:GetService("ReplicatedStorage").Remotes.Functions["EAT_FOOD"]
 
--- Block Remotes
+	-- Block Remotes
 
-local block_break_remote = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_BREAK_REQUEST"]
-local blockPlaceRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_PLACE_REQUEST"]
+	local block_break_remote = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_BREAK_REQUEST"]
+	local blockPlaceRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_PLACE_REQUEST"]
 
--- Tool Remotes
+	-- Tool Remotes
 
-local pickRem = game:GetService("ReplicatedStorage").Remotes.Functions["TOOL_PICKUP_REQUEST"]
-local depositRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_WORKER_DEPOSIT_TOOL_REQUEST"]
-local hitRem = game:GetService("ReplicatedStorage").Remotes.Functions["SWING_SWORD"]
+	local pickRem = game:GetService("ReplicatedStorage").Remotes.Functions["TOOL_PICKUP_REQUEST"]
+	local depositRem = game:GetService("ReplicatedStorage").Remotes.Functions["BLOCK_WORKER_DEPOSIT_TOOL_REQUEST"]
+	local hitRem = game:GetService("ReplicatedStorage").Remotes.Functions["SWING_SWORD"]
 
--- Wally's UI Library
+	-- Wally's UI Library
 
-local library = loadstring(game:HttpGet(('https://pastebin.com/raw/FsJak6AT')))()
+	local library = loadstring(game:HttpGet(('https://pastebin.com/raw/FsJak6AT')))()
 
--- Windows
+	-- Windows
 
-local autofarm_window = library:CreateWindow('Autofarm')
+	local autofarm_window = library:CreateWindow('Autofarm')
 
--- Farming Folder
+	-- Farming Folder
 
-local crop_folder = autofarm_window:CreateFolder('Autoharvest')
+	local crop_folder = autofarm_window:CreateFolder('Autoharvest')
 
--- Autoharvest functions
+	-- Autoharvest functions
 
-function getBlock(a)
-    local blocks = {}
-    for i,v in pairs(game:GetService("Workspace").Islands:GetChildren()) do
-        if v:FindFirstChild("UserId") and v.UserId.Value == game.Players.LocalPlayer.UserId then
-            for i2,v2 in pairs(v.Blocks:GetChildren()) do
-                if v2.Name == (a):lower() or string.find(v2.Name, (a):lower()) and v2:FindFirstChildWhichIsA("Model") then
-                    table.insert(blocks, v2:FindFirstChildWhichIsA("Model"))
-                end
-            end
-        end
-    end
-    return blocks
-end
-
--- Autoharvest Variables
-
-local farmCrop = false
-local farmCropReplace = false
-local crop = "Unknown"
-
--- Autoharvest Selection
-
-crop_folder:Dropdown("Crop name",{"Crop name","Wheat","Carrot","Tomato","Onion","Berry"}, function(a)
-    crop = (a):lower()
-end)
-
--- Autoharvest Crops
-
-crop_folder:Toggle('Autofarm crops', function(a)
-    farmCrop = a
-end)
-
--- Replace Crops
-
-crop_folder:Toggle('Replace crops', function(a)
-    farmCropReplace = a
-end)
-
--- Plow Grass Button
-
-crop_folder:Button('Plow grass', function()
-    for i,v in pairs(getBlock("grass")) do
-        plow_block_remote:InvokeServer({
-            ["block"] = v
-        })
-    end
-end)
-
--- Unplow Grass Button
-
-crop_folder:Button('Un-plow  grass', function()
-    for i,v in pairs(getBlock("soil")) do
-        plow_block_remote:InvokeServer({
-            ["block"] = v
-        })
-    end
-end)
-
--- Info Label
-
-crop_folder:Label('Equip Plow while Plowing.')
-
---[[
-------------------------------------------------------------------------
---]]
-
--- Ore Folder
-
-local automine_folder = autofarm_window:CreateFolder('Automine')
-
--- Ore Variables
-
-local automine_all = false
-local automine = false
-local ore = "Unknown"
-
--- Select ore dropdown for automine
-
-automine_folder:Dropdown("Ore name",{"Ore name","Iron","Coal","Stone"}, function(a)
-    ore = (a):lower()
-end)
-
--- Toggle automine on or off
-
-automine_folder:Toggle('Automine ore', function(a)
-    automine = a
-end)
-
--- Toggle mining all ores
-
-automine_folder:Toggle('Automine all ores', function(a)
-    automine_all = a
-end)
-
---[[
-------------------------------------------------------------------------
---]]
-
--- Autosmelt Folder
-
-local smelting_folder = autofarm_window:CreateFolder('Autosmelting')
-
-local smelt = false
-local ore_name = "Unknown"
-local fuel_name = "Unknown"
-local smelter_name = "Unknown"
-
-smelting_folder:Dropdown("Ore",{"Ore","Iron"}, function(a)
-	if a == "Iron" then
-		ore_name = "iron"
+	function getBlock(a)
+	    local blocks = {}
+	    for i,v in pairs(game:GetService("Workspace").Islands:GetChildren()) do
+		if v:FindFirstChild("UserId") and v.UserId.Value == game.Players.LocalPlayer.UserId then
+		    for i2,v2 in pairs(v.Blocks:GetChildren()) do
+			if v2.Name == (a):lower() or string.find(v2.Name, (a):lower()) and v2:FindFirstChildWhichIsA("Model") then
+			    table.insert(blocks, v2:FindFirstChildWhichIsA("Model"))
+			end
+		    end
+		end
+	    end
+	    return blocks
 	end
-end)
 
-smelting_folder:Dropdown("Fuel name",{"Fuel name","Oak Wood","Pine Wood","Coal"}, function(a)
-	if a == "Oak Wood" then
-		fuel_name = "wood"
-	end
-	if a == "Pine Wood" then -- BROKEN
-		fuel_name = "pine"
-	end
-	if a == "Coal" then
-		fuel_name = "coal"
-	end
-end)
+	-- Autoharvest Variables
 
-smelting_folder:Dropdown("Smelter name",{"Smelter name","Campfire","Small Furnace","Industrial Smelter"}, function(a)
-	if a == "Campfire" then
-		smelter_name = "campfire" -- BROKEN
-	end
-	if a == "Small Furnace" then
-		smelter_name = "small"
-	end
-	if a == "Industrial Smelter" then -- BROKEN
-		smelter_name = "industrial"
-	end
-end)
+	local farmCrop = false
+	local farmCropReplace = false
+	local crop = "Unknown"
 
-smelting_folder:Toggle('Auto smelt', function(a)
-    smelt = a
-end)
+	-- Autoharvest Selection
 
-smelting_folder:Label('Campfire and Industrial \nAre Broken')
+	crop_folder:Dropdown("Crop name",{"Crop name","Wheat","Carrot","Tomato","Onion","Berry"}, function(a)
+	    crop = (a):lower()
+	end)
 
---[[
-------------------------------------------------------------------------
---]]
+	-- Autoharvest Crops
 
-local totem_folder = autofarm_window:CreateFolder('Autototem')
+	crop_folder:Toggle('Autofarm crops', function(a)
+	    farmCrop = a
+	end)
 
-local automine_totems = false
-local auto_collect = false
+	-- Replace Crops
 
-totem_folder:Toggle('Automine ores created', function(a)
-    automine_totems = a
-end)
-totem_folder:Toggle('Autocollect items', function(a)
-    auto_collect = a
-end)
+	crop_folder:Toggle('Replace crops', function(a)
+	    farmCropReplace = a
+	end)
 
---[[
-------------------------------------------------------------------------
---]]
+	-- Plow Grass Button
 
--- Slime Library
+	crop_folder:Button('Plow grass', function()
+	    for i,v in pairs(getBlock("grass")) do
+		plow_block_remote:InvokeServer({
+		    ["block"] = v
+		})
+	    end
+	end)
 
-local slime_folder = autofarm_window:CreateFolder('Autoslime')
+	-- Unplow Grass Button
 
--- Slime variables
+	crop_folder:Button('Un-plow  grass', function()
+	    for i,v in pairs(getBlock("soil")) do
+		plow_block_remote:InvokeServer({
+		    ["block"] = v
+		})
+	    end
+	end)
 
-local kill_slimes = false
+	-- Info Label
 
--- Killaura Toggle
+	crop_folder:Label('Equip Plow while Plowing.')
 
-slime_folder:Toggle('Killaura Slimes', function(a)
-    kill_slimes = a
-end)
+	--[[
+	------------------------------------------------------------------------
+	--]]
 
--- TP to slime island button
+	-- Ore Folder
 
-slime_folder:Button('Slime Island TP', function(a)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(686.188049, 193.070175, -229.89093, 0.792604923, 0.0576229654, 0.607006669, -0.039945025, 0.998292983, -0.0426090583, -0.608425736, 0.00952526182, 0.79355371) * CFrame.new(0,0,5)
-end)
+	local automine_folder = autofarm_window:CreateFolder('Automine')
 
---[[
-------------------------------------------------------------------------
---]]
+	-- Ore Variables
 
--- Misc Library
+	local automine_all = false
+	local automine = false
+	local ore = "Unknown"
 
-local misc_folder = autofarm_window:CreateFolder('Misc')
+	-- Select ore dropdown for automine
 
--- Misc Variables
+	automine_folder:Dropdown("Ore name",{"Ore name","Iron","Coal","Stone"}, function(a)
+	    ore = (a):lower()
+	end)
 
-local anti_afk = false
+	-- Toggle automine on or off
 
--- Anti AFK toggle
+	automine_folder:Toggle('Automine ore', function(a)
+	    automine = a
+	end)
 
-misc_folder:Toggle('Anti AFK', function(a)
-    anti_afk = a
-end)
+	-- Toggle mining all ores
 
--- Noclip Toggle and Keybind
+	automine_folder:Toggle('Automine all ores', function(a)
+	    automine_all = a
+	end)
 
-local nocliptoggle = false
+	--[[
+	------------------------------------------------------------------------
+	--]]
 
-misc_folder:Bind("Noclip",function()
-	if nocliptoggle == true then
-		game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
-		nocliptoggle = false
-	elseif nocliptoggle == false then 
-		nocliptoggle = true
-	end
-	game:GetService('RunService').Stepped:connect(function()
-		if nocliptoggle == true then
-			game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+	-- Autosmelt Folder
+
+	local smelting_folder = autofarm_window:CreateFolder('Autosmelting')
+
+	local smelt = false
+	local ore_name = "Unknown"
+	local fuel_name = "Unknown"
+	local smelter_name = "Unknown"
+
+	smelting_folder:Dropdown("Ore",{"Ore","Iron"}, function(a)
+		if a == "Iron" then
+			ore_name = "iron"
 		end
 	end)
-end)
 
--- Speed Script
+	smelting_folder:Dropdown("Fuel name",{"Fuel name","Oak Wood","Pine Wood","Coal"}, function(a)
+		if a == "Oak Wood" then
+			fuel_name = "wood"
+		end
+		if a == "Pine Wood" then -- BROKEN
+			fuel_name = "pine"
+		end
+		if a == "Coal" then
+			fuel_name = "coal"
+		end
+	end)
 
-misc_folder:Slider("Speed",1000,function(value)
-	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-end)
+	smelting_folder:Dropdown("Smelter name",{"Smelter name","Campfire","Small Furnace","Industrial Smelter"}, function(a)
+		if a == "Campfire" then
+			smelter_name = "campfire" -- BROKEN
+		end
+		if a == "Small Furnace" then
+			smelter_name = "small"
+		end
+		if a == "Industrial Smelter" then -- BROKEN
+			smelter_name = "industrial"
+		end
+	end)
 
--- Reset Speed
+	smelting_folder:Toggle('Auto smelt', function(a)
+	    smelt = a
+	end)
 
-misc_folder:Button("Reset Speed",function()
-   	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-end)
+	smelting_folder:Label('Campfire and Industrial \nAre Broken')
 
--- Destroy GUI
+	--[[
+	------------------------------------------------------------------------
+	--]]
 
-misc_folder:DestroyGUI()
+	local totem_folder = autofarm_window:CreateFolder('Autototem')
 
--- Change the colors of things
+	local automine_totems = false
+	local auto_collect = false
 
-misc_folder:GuiSettings() 
+	totem_folder:Toggle('Automine ores created', function(a)
+	    automine_totems = a
+	end)
+	totem_folder:Toggle('Autocollect items', function(a)
+	    auto_collect = a
+	end)
 
---[[
-------------------------------------------------------------------------
---]]
+	--[[
+	------------------------------------------------------------------------
+	--]]
 
--- Credits Folder
+	-- Slime Library
 
-local credits_folder = autofarm_window:CreateFolder('Credits')
+	local slime_folder = autofarm_window:CreateFolder('Autoslime')
 
--- Credits Labels
+	-- Slime variables
 
-credits_folder:Label('CallMeSynisti#6049 (LEAD DEV)')
-credits_folder:Label('PhantomScripter#1303')
-credits_folder:Label('Stefanuk12#5820')
+	local kill_slimes = false
 
---[[
-------------------------------------------------------------------------
---]]
+	-- Killaura Toggle
 
--- Teleport back functions
+	slime_folder:Toggle('Killaura Slimes', function(a)
+	    kill_slimes = a
+	end)
 
-local savePos = true
-local savedPos = CFrame.new(0,0,0)
+	-- TP to slime island button
 
-spawn(function()
-    while wait() do
-        if savePos ~= nil and savePos then
-            savedPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        end
-    end
-end)
+	slime_folder:Button('Slime Island TP', function(a)
+	    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(686.188049, 193.070175, -229.89093, 0.792604923, 0.0576229654, 0.607006669, -0.039945025, 0.998292983, -0.0426090583, -0.608425736, 0.00952526182, 0.79355371) * CFrame.new(0,0,5)
+	end)
 
--- Autofarming crops functions
+	--[[
+	------------------------------------------------------------------------
+	--]]
 
-spawn(function()
-    while wait() do
-        if farmCrop then
-            for i,v in pairs(getBlock(crop)) do
-                harvest_block_remote:InvokeServer({
-                    ["player"] = game.Players.LocalPlayer,
-                    ["model"] = v
-                })
-            end
-            for i,v in pairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
-                local name = crop:lower().."Seeds" 
-                if v.Name == name or game.Players.LocalPlayer.Character:FindFirstChild(name) and farmCrop then
-                    for i3,v3 in pairs(getBlock('soil')) do
-                        if farmCropReplace and (game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(name) or game.Players.LocalPlayer.Character:FindFirstChild(name)) then
-                            blockPlaceRem:InvokeServer({
-                                ["cframe"] = v3.Parent.CFrame * CFrame.new(0,3,0),
-                                ["blockType"] = crop:lower()
-                            })
-                            if game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(name) then
-                                game:GetService("Players").LocalPlayer.Backpack[name].Parent = game.workspace[game.Players.LocalPlayer.Name]
-                            end
-                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v3.Parent.CFrame * CFrame.new(0,3,0)
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
+	local eat_folder = autofarm_window:CreateFolder('Autoheal')
 
--- Automine functions
+	local auto_eat = false
+	local food_type = "Unknown"
 
-spawn(function()
-    while wait() do
-        if automine then
-            local name = tostring('rock' .. ore)
-            if game:GetService("Workspace").WildernessBlocks:FindFirstChild(name) then
-                block_break_remote:InvokeServer({
-                    ["block"] = game:GetService("Workspace").WildernessBlocks:FindFirstChild(name):FindFirstChild(name)
-                })
-            end
-        end
-        if automine_all then
-            for i,v in pairs(game:GetService("Workspace").WildernessBlocks:GetChildren()) do
-                if string.find(v.Name:lower(), 'rock') and v:FindFirstChild(v.Name) and v:FindFirstChild(v.Name):FindFirstChild('Root') and (v:FindFirstChild(v.Name):FindFirstChild('Root').Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 120 then
-                    block_break_remote:InvokeServer({
-                        ["block"] = v:FindFirstChild(v.Name)
-                    })
-                end
-            end
-        end
-    end
-end)
+	eat_folder:Dropdown("Food Type",{"Food Type","Bread","Berry Pie","Berries"}, function(a)
+		if a == "Bread" then
+			food_type = "bread"
+		end
+		if a == "Berry Pie" then
+			food_type = "berryPie"
+		end
+		if a == "Berries" then
+			food_type = "berryHarvested"
+		end
+	end)
 
--- Autosmelt function
+	eat_folder:Toggle('Autoeat/heal', function(a)
+		auto_eat = not auto_eat
+	end)
 
-spawn(function()
-    while wait() do
-        if smelt == true then
-            for i,v in pairs(getBlock(smelter_name)) do
-                depositRem:InvokeServer({
-                    ["block"] = v,
-                    ["amount"] = 1,
-                    ["toolName"] = ore_name .. "Ore"
-                })
-                depositRem:InvokeServer({
-                    ["block"] = v,
-                    ["amount"] = 1,
-                    ["toolName"] = fuel_name
-                })
-                if v:FindFirstChild("WorkerContents") and v.WorkerContents:FindFirstChildWhichIsA("Tool") and v.WorkerContents:FindFirstChildWhichIsA("Tool").Name == ore_name then
-                    savePos = false
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame * CFrame.new(0,0,-3)
-                    wait(0.2)
-                    pickRem:InvokeServer({
-                        ["tool"] = v.WorkerContents:FindFirstChildWhichIsA("Tool")
-                    })
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedPos
-                    savePos = true
-                end
-            end
-        end
-    end
-end)
+	--[[
+	------------------------------------------------------------------------
+	--]]
 
--- Auto collect totem function
+	-- Misc Library
 
-spawn(function()
-    while wait() do
-        if automine_totems == true then
-            for i,v in pairs(getBlock('rock')) do
-                block_break_remote:InvokeServer({
-                    ["block"] = v
-                })
-            end
-        end
-        if auto_collect == true then
-            for i,v in pairs(getBlock('totem')) do
-                if v:FindFirstChild("WorkerContents") and v.WorkerContents:FindFirstChildWhichIsA("Tool") then
-                    savePos = false
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame * CFrame.new(0,0,-5)
-                    wait(0.2)
-                    pickRem:InvokeServer({
-                        ["tool"] = v.WorkerContents:FindFirstChildWhichIsA("Tool")
-                    })
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedPos
-                    savePos = true
-                end
-            end
-        end
-    end
-end)
+	local misc_folder = autofarm_window:CreateFolder('Misc')
 
--- Killaura for slimes function
+	-- Misc Variables
 
-spawn(function()
-    while wait() do
-        if kill_slimes == true then
-            for i,v in pairs(game:GetService("Workspace").Entities:GetChildren()) do
-                hitRem:InvokeServer({
-                    ["hitUnit"] = v
-                })
-            end
-        end
-    end
-end)
+	local anti_afk = false
 
--- Anti AFK Function
+	-- Anti AFK toggle
 
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-    print("Went Afk")
-    if anti_afk == true then
-        warn("Active")
-        game:GetService("VirtualUser"):Button2Down(Vector2.new())
-    end
-end)
+	misc_folder:Toggle('Anti AFK', function(a)
+	    anti_afk = a
+	end)
+
+	-- Noclip Toggle and Keybind
+
+	local nocliptoggle = false
+
+	misc_folder:Bind("Noclip",function()
+		if nocliptoggle == true then
+			game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+			nocliptoggle = false
+		elseif nocliptoggle == false then 
+			nocliptoggle = true
+		end
+		game:GetService('RunService').Stepped:connect(function()
+			if nocliptoggle == true then
+				game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+			end
+		end)
+	end)
+
+	-- Speed Script
+
+	misc_folder:Slider("Speed",1000,function(value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+	end)
+
+	-- Reset Speed
+
+	misc_folder:Button("Reset Speed",function()
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+	end)
+
+	-- Destroy GUI
+
+	misc_folder:DestroyGUI()
+
+	-- Change the colors of things
+
+	misc_folder:GuiSettings() 
+
+	--[[
+	------------------------------------------------------------------------
+	--]]
+
+	-- Credits Folder
+
+	local credits_folder = autofarm_window:CreateFolder('Credits')
+
+	-- Credits Labels
+
+	credits_folder:Label('CallMeSynisti#6049 (LEAD DEV)')
+	credits_folder:Label('PhantomScripter#1303')
+	credits_folder:Label('Stefanuk12#5820')
+
+	--[[
+	------------------------------------------------------------------------
+	--]]
+
+	-- Teleport back functions
+
+	local savePos = true
+	local savedPos = CFrame.new(0,0,0)
+
+	spawn(function()
+	    while wait() do
+		if savePos ~= nil and savePos then
+		    savedPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+		end
+	    end
+	end)
+
+	-- Autofarming crops functions
+
+	spawn(function()
+	    while wait() do
+		if farmCrop then
+		    for i,v in pairs(getBlock(crop)) do
+			harvest_block_remote:InvokeServer({
+			    ["player"] = game.Players.LocalPlayer,
+			    ["model"] = v
+			})
+		    end
+		    for i,v in pairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
+			local name = crop:lower().."Seeds" 
+			if v.Name == name or game.Players.LocalPlayer.Character:FindFirstChild(name) and farmCrop then
+			    for i3,v3 in pairs(getBlock('soil')) do
+				if farmCropReplace and (game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(name) or game.Players.LocalPlayer.Character:FindFirstChild(name)) then
+				    blockPlaceRem:InvokeServer({
+					["cframe"] = v3.Parent.CFrame * CFrame.new(0,3,0),
+					["blockType"] = crop:lower()
+				    })
+				    if game:GetService("Players").LocalPlayer.Backpack:FindFirstChild(name) then
+					game:GetService("Players").LocalPlayer.Backpack[name].Parent = game.workspace[game.Players.LocalPlayer.Name]
+				    end
+				    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v3.Parent.CFrame * CFrame.new(0,3,0)
+				end
+			    end
+			end
+		    end
+		end
+	    end
+	end)
+
+	-- Automine functions
+
+	spawn(function()
+	    while wait() do
+		if automine then
+		    local name = tostring('rock' .. ore)
+		    if game:GetService("Workspace").WildernessBlocks:FindFirstChild(name) then
+			block_break_remote:InvokeServer({
+			    ["block"] = game:GetService("Workspace").WildernessBlocks:FindFirstChild(name):FindFirstChild(name)
+			})
+		    end
+		end
+		if automine_all then
+		    for i,v in pairs(game:GetService("Workspace").WildernessBlocks:GetChildren()) do
+			if string.find(v.Name:lower(), 'rock') and v:FindFirstChild(v.Name) and v:FindFirstChild(v.Name):FindFirstChild('Root') and (v:FindFirstChild(v.Name):FindFirstChild('Root').Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 120 then
+			    block_break_remote:InvokeServer({
+				["block"] = v:FindFirstChild(v.Name)
+			    })
+			end
+		    end
+		end
+	    end
+	end)
+
+	-- Autosmelt function
+
+	spawn(function()
+	    while wait() do
+		if smelt == true then
+		    for i,v in pairs(getBlock(smelter_name)) do
+			depositRem:InvokeServer({
+			    ["block"] = v,
+			    ["amount"] = 1,
+			    ["toolName"] = ore_name .. "Ore"
+			})
+			depositRem:InvokeServer({
+			    ["block"] = v,
+			    ["amount"] = 1,
+			    ["toolName"] = fuel_name
+			})
+			if v:FindFirstChild("WorkerContents") and v.WorkerContents:FindFirstChildWhichIsA("Tool") and v.WorkerContents:FindFirstChildWhichIsA("Tool").Name == ore_name then
+			    savePos = false
+			    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame * CFrame.new(0,0,-3)
+			    wait(0.2)
+			    pickRem:InvokeServer({
+				["tool"] = v.WorkerContents:FindFirstChildWhichIsA("Tool")
+			    })
+			    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedPos
+			    savePos = true
+			end
+		    end
+		end
+	    end
+	end)
+
+	-- Auto collect totem function
+
+	spawn(function()
+	    while wait() do
+		if automine_totems == true then
+		    for i,v in pairs(getBlock('rock')) do
+			block_break_remote:InvokeServer({
+			    ["block"] = v
+			})
+		    end
+		end
+		if auto_collect == true then
+		    for i,v in pairs(getBlock('totem')) do
+			if v:FindFirstChild("WorkerContents") and v.WorkerContents:FindFirstChildWhichIsA("Tool") then
+			    savePos = false
+			    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame * CFrame.new(0,0,-5)
+			    wait(0.2)
+			    pickRem:InvokeServer({
+				["tool"] = v.WorkerContents:FindFirstChildWhichIsA("Tool")
+			    })
+			    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = savedPos
+			    savePos = true
+			end
+		    end
+		end
+	    end
+	end)
+
+	-- Killaura for slimes function
+
+	spawn(function()
+	    while wait() do
+		if kill_slimes == true then
+		    for i,v in pairs(game:GetService("Workspace").Entities:GetChildren()) do
+			hitRem:InvokeServer({
+			    ["hitUnit"] = v
+			})
+		    end
+		end
+	    end
+	end)
+
+	spawn(function()
+		while wait() do
+			if auto_eat == true then
+				local players = game:GetService("Players")
+				if players.LocalPlayer.Character.Humanoid.Health < 100 then
+					eat_food_remote:InvokeServer({
+						["tool"] = food_type
+					})
+				end
+			end
+		end
+	end)	
+
+	-- Anti AFK Function
+
+	game:GetService("Players").LocalPlayer.Idled:connect(function()
+	    print("Went Afk")
+	    if anti_afk == true then
+		warn("Active")
+		game:GetService("VirtualUser"):Button2Down(Vector2.new())
+	    end
+	end)
