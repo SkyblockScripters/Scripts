@@ -241,6 +241,7 @@
 
 	local auto_eat = false
 	local food_type = "Unknown"
+	local eat_health = "100"
 
 	eat_folder:Dropdown("Food Type",{"Food Type","Bread","Berry Pie","Berries"}, function(a)
 		if a == "Bread" then
@@ -253,11 +254,17 @@
 			food_type = "berryHarvested"
 		end
 	end)
+	
+	eat_folder:Slider("Eat until...",100,function(value)
+		eat_health = value
+	end)
 
 	eat_folder:Toggle('Autoeat/heal', function(a)
 		auto_eat = not auto_eat
 	end)
-
+	
+	eat_folder:Label('Hold food to eat')
+	
 	--[[
 	------------------------------------------------------------------------
 	--]]
@@ -477,11 +484,12 @@
 	spawn(function()
 		while wait() do
 			if auto_eat == true then
-				for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+				local players = game:GetService("Players")
+				local local_player = players.LocalPlayer.Name
+				for i,v in pairs(game.Workspace[local_player]:GetChildren()) do
 					if v.Name == food_type then
-						print(v)
 						local players = game:GetService("Players")
-						if players.LocalPlayer.Character.Humanoid.Health < 100 then
+						if players.LocalPlayer.Character.Humanoid.Health < eat_health then
 							eat_food_remote:InvokeServer({
 								["tool"] = v
 							})
